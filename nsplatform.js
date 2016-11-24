@@ -5,12 +5,12 @@
  * I do contract work in most languages, so let me solve your problems!
  *
  * Any questions please feel free to email me or put a issue up on the github repo
- * Version 1.0.0                                      Nathan@master-technology.com
+ * Version 1.0.1                                      Nathan@master-technology.com
  *********************************************************************************/
 "use strict";
 
 /* jshint camelcase: false */
-/* global java, android, NSString, NSObject */
+/* global global, java, android, NSString, NSObject */
 
 if (typeof global.nsPlatform === 'undefined') {
     global.nsPlatform = {
@@ -32,7 +32,7 @@ if (typeof global.nsPlatform === 'undefined') {
         global.nsPlatform.ios = true;
         global.nsPlatform.platform = global.nsPlatform.type.IOS;
     } else { // TODO: Check what properties are available on Windows Runtime
-        global.nsPlatform.winows = true;
+        global.nsPlatform.windows = true;
         global.nsPlatform.platform = global.nsPlatform.type.WINDOWS;
     }
 
