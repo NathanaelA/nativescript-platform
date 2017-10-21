@@ -63,6 +63,8 @@ Example:
 ```
 if (nsPlatform.isAndroid()) { /* do my android specific stuff */ }
 ```
+- .hasSoftNav();
+returns if Android device is using Soft Navigation.
 
 
 ### Variables

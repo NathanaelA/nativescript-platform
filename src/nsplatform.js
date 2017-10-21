@@ -23,6 +23,11 @@ if (typeof global.nsPlatform === 'undefined') {
 		isWindows: function() { return global.nsPlatform.windows; },
 		isAndroid: function() { return global.nsPlatform.android; },
 		isIOS: function() { return global.nsPlatform.ios; },
+        hasSoftNav: function() {
+		   const fake = getResolution(false);
+		   const real = getResolution();
+		   return ((fake.widthPixels < real.widthPixels) || (fake.heightPixels < real.heightPixels));
+        },
 		platform: 0,
 
 	};
@@ -77,10 +82,14 @@ function getContext() {
 
 
 if (nsPlatform.android) {
-	getResolution = function() {
+	getResolution = function(v) {
 		const context = getContext();
 		const metrics = new android.util.DisplayMetrics();
-		context.getSystemService(android.content.Context.WINDOW_SERVICE).getDefaultDisplay().getRealMetrics(metrics);
+		if (v === false) {
+            context.getSystemService(android.content.Context.WINDOW_SERVICE).getDefaultDisplay().getMetrics(metrics);
+        } else {
+            context.getSystemService(android.content.Context.WINDOW_SERVICE).getDefaultDisplay().getRealMetrics(metrics);
+        }
 
 		return {
 			width: parseInt(metrics.widthPixels / metrics.density,10),
