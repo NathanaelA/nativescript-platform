@@ -91,6 +91,9 @@ switch (nsPlatform.platform) {
 }
 ```
 
+### .deviceType 
+`Tablet` or `Phone` 
+
 ### .screen 
 - .width - Width of Screen (DIP)
 - .height - Height of Screen (DIP)

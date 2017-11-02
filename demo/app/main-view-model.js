@@ -13,6 +13,7 @@ function createViewModel() {
     for (var key in nsPlatform.device) {
         Data += "\r\n   "+key+": " + nsPlatform.device[key];
     }
+    Data += "\r\nDeviceType: " + nsPlatform.deviceType;
 
     Data += "\r\nScreen";
     for (var key in nsPlatform.screen) {

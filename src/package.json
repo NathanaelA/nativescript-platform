@@ -1,6 +1,6 @@
 {
   "name": "nativescript-platform",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "A NativeScript plugin to easily deal with getting the platform running on",
   "main": "nsplatform",
   "typings": "index.d.ts",

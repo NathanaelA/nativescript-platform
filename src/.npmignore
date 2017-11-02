@@ -5,5 +5,7 @@ demo/
 docs/
 *.tar
 *.tgz
+*.zip
 .npmignore
+node_modules/
 

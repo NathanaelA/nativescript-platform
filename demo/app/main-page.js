@@ -13,6 +13,7 @@ function onNavigatingTo(args) {
     for (var key in nsPlatform.device) {
         console.log("  ",key+":", nsPlatform.device[key]);
     }
+    console.log("DeviceType:", nsPlatform.deviceType);
     console.log("Screen:" );
     for (var key in nsPlatform.screen) {
         console.log("  ",key+":", nsPlatform.screen[key]);

@@ -9,6 +9,7 @@ export function isWindows(): boolean;
 export const windows: boolean;
 export const ios: boolean;
 export const android: boolean;
+export const deviceType: string;
 
 enum TYPE {
     ANDROID = 1,

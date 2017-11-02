@@ -11,7 +11,7 @@
 
 /* jshint camelcase: false */
 /* global global, java, android, NSString, NSObject, UIScreen */
-let getResolution, getDevice;
+let getResolution, getDevice, getDeviceType;
 
 if (typeof global.nsPlatform === 'undefined') {
 	global.nsPlatform = {
@@ -38,6 +38,10 @@ if (typeof global.nsPlatform === 'undefined') {
 	Object.defineProperty(global.nsPlatform, "device", {
 	    get: function() { return getDevice(); }
     });
+    Object.defineProperty(global.nsPlatform, "deviceType", {
+        get: function() { return getDeviceType(); }
+    });
+
 
 	if (typeof java !== 'undefined' && typeof android !== 'undefined') {
 		global.nsPlatform.android = true;
@@ -100,23 +104,35 @@ if (nsPlatform.android) {
 		};
 	};
 
-	let deviceType = null;
+	let deviceInfoCache = null;
 	getDevice = function() {
-	    if (deviceType) { return deviceType; }
-	    deviceType = {emulator: false, model: "emulator", name: "emulator", manufacturer: "generic"};
+	    if (deviceInfoCache) { return deviceInfoCache; }
+	    deviceInfoCache = {emulator: false, model: "emulator", name: "emulator", manufacturer: "generic"};
 
         const res = android.os.Build.FINGERPRINT;
-        if (res.indexOf("vbox86") >= 0 || res.indexOf("generic") >= 0) { deviceType.emulator = true; }
+        if (res.indexOf("vbox86") >= 0 || res.indexOf("generic") >= 0) { deviceInfoCache.emulator = true; }
 
-        deviceType.manufacturer = android.os.Build.MANUFACTURER;
-        deviceType.model = android.os.Build.MODEL;
+        deviceInfoCache.manufacturer = android.os.Build.MANUFACTURER;
+        deviceInfoCache.model = android.os.Build.MODEL;
 
         const betterModel = android.provider.Settings.Secure.getString(getContext().getContentResolver(), "bluetooth_name");
-        if (betterModel) { deviceType.name = betterModel.toString();}
-        else deviceType.name = deviceType.model;
+        if (betterModel) { deviceInfoCache.name = betterModel.toString();}
+        else deviceInfoCache.name = deviceInfoCache.model;
 
-        return deviceType;
-    }
+        return deviceInfoCache;
+    };
+
+	let deviceTypeCache = null;
+    getDeviceType = function() {
+        if (deviceTypeCache) { return deviceTypeCache; }
+        if (getContext().getResources().getConfiguration().smallestScreenWidthDp >= 600) {
+            deviceTypeCache = "Tablet";
+        } else {
+            deviceTypeCache = "Phone";
+        }
+        return deviceTypeCache;
+    };
+
 } else if (nsPlatform.ios) {
 	getResolution = function() {
 		const screen = iOSProperty(UIScreen, UIScreen.mainScreen);
@@ -129,10 +145,10 @@ if (nsPlatform.android) {
 		};
 	};
 
-	let deviceType = null;
+	let deviceInfoCache = null;
 	getDevice = function() {
-	    if (deviceType) { return deviceType; }
-	    deviceType = {emulator: false, model: "emulator", name: "emulator", manufacturer: "Apple"};
+	    if (deviceInfoCache) { return deviceInfoCache; }
+	    deviceInfoCache = {emulator: false, model: "emulator", name: "emulator", manufacturer: "Apple"};
         // See: https://github.com/NativeScript/ios-runtime/issues/698
         const _SYS_NAMELEN = 256;
         const buffer = interop.alloc(5 * _SYS_NAMELEN);
@@ -141,169 +157,176 @@ if (nsPlatform.android) {
 
         // Get machine name for Simulator
         if (_machine === "x86_64" || _machine === "i386") {
-            deviceType.emulator = true;
+            deviceInfoCache.emulator = true;
             let env = iOSProperty(NSProcessInfo, NSProcessInfo.processInfo).environment;
             _machine = env.objectForKey("SIMULATOR_MODEL_IDENTIFIER");
         }
-        deviceType.model = _machine;
+        deviceInfoCache.model = _machine;
 
         switch (_machine) {
             // region iPhone's
             case "iPhone1,1":
-                deviceType.name = "iPhone";
+                deviceInfoCache.name = "iPhone";
                 break;
             case "iPhone1,2":
-                deviceType.name = "iPhone3G";
+                deviceInfoCache.name = "iPhone3G";
                 break;
             case "iPhone2,1":
-                deviceType.name = "iPhone3GS";
+                deviceInfoCache.name = "iPhone3GS";
                 break;
             case "iPhone3,1":
             case "iPhone3,2":
             case "iPhone3,3":
-                deviceType.name = "iPhone4";
+                deviceInfoCache.name = "iPhone4";
                 break;
             case "iPhone4,1":
-                deviceType.name = "iPhone4S";
+                deviceInfoCache.name = "iPhone4S";
                 break;
             case "iPhone5,1":
             case "iPhone5,2":
-                deviceType.name = "iPhone5";
+                deviceInfoCache.name = "iPhone5";
                 break;
             case "iPhone5,3":
             case "iPhone5,4":
-                deviceType.name = "iPhone5C";
+                deviceInfoCache.name = "iPhone5C";
                 break;
             case "iPhone6,1":
             case "iPhone6,2":
-                deviceType.name = "iPhone5S";
+                deviceInfoCache.name = "iPhone5S";
                 break;
             case "iPhone7,1":
-                deviceType.name = "iPhone6Plus";
+                deviceInfoCache.name = "iPhone6Plus";
                 break;
             case "iPhone7,2":
-                deviceType.name = "iPhone6";
+                deviceInfoCache.name = "iPhone6";
                 break;
             case "iPhone8,1":
-                deviceType.name = "iPhone6S";
+                deviceInfoCache.name = "iPhone6S";
                 break;
             case "iPhone8,2":
-                deviceType.name = "iPhone6SPlus";
+                deviceInfoCache.name = "iPhone6SPlus";
                 break;
             case "iPhone8,4":
-                deviceType.name = "iPhoneSE";
+                deviceInfoCache.name = "iPhoneSE";
                 break;
             case "iPhone9,1":
             case "iPhone9,3":
-                deviceType.name = "iPhone7";
+                deviceInfoCache.name = "iPhone7";
                 break;
             case "iPhone9,2":
             case "iPhone9,4":
-                deviceType.name = "iPhone7Plus";
+                deviceInfoCache.name = "iPhone7Plus";
                 break;
             case "iPhone10,1":
             case "iPhone10,4":
-                deviceType.name = "iPhone8";
+                deviceInfoCache.name = "iPhone8";
                 break;
             case "iPhone10,2":
             case "iPhone10,5":
-                deviceType.name = "iPhone8Plus";
+                deviceInfoCache.name = "iPhone8Plus";
                 break;
             case "iPhone10,3":
             case "iPhone10,6":
-                deviceType.name = "iPhoneX";
+                deviceInfoCache.name = "iPhoneX";
                 break;
             // endregion iPhone
 
             /// region iPad's
             case "iPad1,1":
-                deviceType.name = "iPad";
+                deviceInfoCache.name = "iPad";
                 break;
             case "iPad2,1":
             case "iPad2,2":
             case "iPad2,3":
             case "iPad2,4":
-                deviceType.name = "iPad 2";
+                deviceInfoCache.name = "iPad 2";
                 break;
             case "iPad2,5":
             case "iPad2,6":
             case "iPad2,7":
-                deviceType.name = "iPad Mini 1";
+                deviceInfoCache.name = "iPad Mini 1";
                 break;
             case "iPad3,1":
             case "iPad3,2":
             case "iPad3,3":
-                deviceType.name = "iPad 3";
+                deviceInfoCache.name = "iPad 3";
                 break;
             case "iPad3,4":
             case "iPad3,5":
             case "iPad3,6":
-                deviceType.name = "iPad 4";
+                deviceInfoCache.name = "iPad 4";
                 break;
             case "iPad4,1":
             case "iPad4,2":
             case "iPad4,3":
-                deviceType.name = "iPad Air";
+                deviceInfoCache.name = "iPad Air";
                 break;
             case "iPad5,3":
             case "iPad5,4":
-                deviceType.name = "iPad Air 2";
+                deviceInfoCache.name = "iPad Air 2";
                 break;
             case "iPad4,4":
             case "iPad4,5":
             case "iPad4,6":
-                deviceType.name = "iPad Mini 2";
+                deviceInfoCache.name = "iPad Mini 2";
                 break;
             case "iPad4,7":
             case "iPad4,8":
             case "iPad4,9":
-                deviceType.name = "iPad Mini 3";
+                deviceInfoCache.name = "iPad Mini 3";
                 break;
             case "iPad5,1":
-            case "iPad5,2": deviceType.name = "iPad Mini 4"; break;
+            case "iPad5,2": deviceInfoCache.name = "iPad Mini 4"; break;
 
             case "iPad6,3":
-            case "iPad6,4": deviceType.name = "iPad 9.7 Pro"; break;
+            case "iPad6,4": deviceInfoCache.name = "iPad 9.7 Pro"; break;
 
             case "iPad6,7":
-            case "iPad6,8": deviceType.name = "iPad 12.9 Pro"; break;
+            case "iPad6,8": deviceInfoCache.name = "iPad 12.9 Pro"; break;
 
             case "iPad7,1":
-            case "iPad7,2": deviceType.name = "iPad 12.9 Pro 2"; break;
+            case "iPad7,2": deviceInfoCache.name = "iPad 12.9 Pro 2"; break;
 
             case "iPad7,3":
-            case "iPad7,4": deviceType.name = "iPad 10.5 Pro"; break;
+            case "iPad7,4": deviceInfoCache.name = "iPad 10.5 Pro"; break;
 
             case "iPad6,11":
-            case "iPad6,12": deviceType.name = "iPad 5"; break;
+            case "iPad6,12": deviceInfoCache.name = "iPad 5"; break;
             /// endregion iPad
 
             /// region iPod's
             case "iPod1,1":
-                deviceType.name = "iPod 1G";
+                deviceInfoCache.name = "iPod 1G";
                 break;
             case "iPod2,1":
-                deviceType.name = "iPod 2G";
+                deviceInfoCache.name = "iPod 2G";
                 break;
             case "iPod3,1":
-                deviceType.name = "iPod 3G";
+                deviceInfoCache.name = "iPod 3G";
                 break;
             case "iPod4,1":
-                deviceType.name = "iPod 4G";
+                deviceInfoCache.name = "iPod 4G";
                 break;
             case "iPod5,1":
-                deviceType.name = "iPod 5G";
+                deviceInfoCache.name = "iPod 5G";
                 break;
             case "iPod7,1":
-                deviceType.name = "iPod 6G";
+                deviceInfoCache.name = "iPod 6G";
                 break;
             // endregion
 
             default:
-                deviceType.name = _machine;
+                deviceInfoCache.name = _machine;
                 break;
         }
 
-        return deviceType;
+        return deviceInfoCache;
+    };
+
+	getDeviceType = function() {
+        if (iOSProperty(UIDevice, UIDevice.currentDevice).userInterfaceIdiom === 0) {
+            return "Phone";
+        }
+        return "Tablet";
     };
 }
