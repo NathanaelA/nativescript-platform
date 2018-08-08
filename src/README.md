@@ -112,8 +112,3 @@ console.log(nsPlatform.manufacturer, nsPlatform.name);
 // Outputs: "Apple iPhoneX"
 ```
 
-### Sponsor
-
-<a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/HXrmpSuyowGyBLzwEVbqXdDa/NathanaelA/nativescript-platform'>
-  <img alt='Sponsor' width='888' height='68' src='https://app.codesponsor.io/embed/HXrmpSuyowGyBLzwEVbqXdDa/NathanaelA/nativescript-platform.svg' />
-</a>
