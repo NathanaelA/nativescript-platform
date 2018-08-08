@@ -1,35 +1,47 @@
 // ----------------------------------------
 // NativeScript-Platforms Typings
 // ----------------------------------------
-
-export function isIOS(): boolean;
-export function isAndroid(): boolean;
-export function isWindows(): boolean;
-
-export const windows: boolean;
-export const ios: boolean;
-export const android: boolean;
-export const deviceType: string;
-
-enum TYPE {
+declare enum TYPE {
     ANDROID = 1,
     IOS = 2,
     WINDOWS = 3
 }
-export const type = TYPE;
 
-export const platform: TYPE;
-export class screen {
-    public width: number;
-    public height: number;
-    public scale: number;
-    public widthPixels: number;
-    public heightPixels: number;
+type Type = {
+    ANDROID: number,
+    IOS: number,
+    WINDOWS: number,
 }
 
-export class platform {
-    public emulator: boolean;
-    public model: string;
-    public name: string;
-    public manufacturer: string;
+interface NsPlatform {
+    isIOS(): boolean;
+    isAndroid(): boolean;
+    isWindows(): boolean;
+
+    windows: boolean;
+    ios: boolean;
+    android: boolean;
+    deviceType: string;
+
+    TYPE: Type;
+    type: Type;
+    platform: TYPE;
+
+    screen: {
+        width: number;
+        height: number;
+        scale: number;
+        widthPixels: number;
+        heightPixels: number;
+    };
+    
+    device: {
+        emulator: boolean;
+        model: string;
+        name: string;
+        manufacturer: string;
+    };
 }
+
+declare const nsPlatform: NsPlatform;
+export = nsPlatform;
