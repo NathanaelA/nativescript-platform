@@ -229,6 +229,16 @@ if (nsPlatform.android) {
             case "iPhone10,6":
                 deviceInfoCache.name = "iPhoneX";
                 break;
+            case "iPhone11,8":
+                deviceInfoCache.name = "iPhoneXR";
+                break;
+            case "iPhone11,2":
+                deviceInfoCache.name = "iPhoneXS";
+                break;
+            case "iPhone11,4":
+            case "iPhone11,6":
+                deviceInfoCache.name = "iPhoneXSMax";
+                break;
             // endregion iPhone
 
             /// region iPad's
