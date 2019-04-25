@@ -5,7 +5,7 @@
  * I do contract work in most languages, so let me solve your problems!
  *
  * Any questions please feel free to email me or put a issue up on the github repo
- * Version 1.2.5                                      Nathan@master-technology.com
+ * Version 1.2.6                                      Nathan@master-technology.com
  *********************************************************************************/
 "use strict";
 
@@ -327,6 +327,11 @@ if (nsPlatform.android) {
             case "iPad11,4":
                 deviceInfoCache.name = "iPad Air 3"; // 3rd Gen
                 break;
+
+            case "iPad11,1":
+            case "iPad11,2":
+                deviceInfoCache.name = "iPad Mini 5"; // 5th Gen
+
 
             /// endregion iPad
 
