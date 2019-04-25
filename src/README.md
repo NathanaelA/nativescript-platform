@@ -52,12 +52,13 @@ nsPlatform will be declared globally.  My recommendation is just to include it i
 ## You ask, how exactly does this help?
 This wraps up several simple ways to check for the platform you are on.  This comes up commonly when you are trying to do stuff on just one platform.
 
+## Breaking changes
+Removed initial windows phone support, its been 4 years -- I don't think NativeScript will ever build actual windows phone apps.
 
 ## API
 ### Functions
 - .isAndroid();
 - .isIOS();
-- .isWindows();
 returns true or false depending on the platform it is on
 Example:
 ```
@@ -69,7 +70,6 @@ returns if Android device is using Soft Navigation.
 
 ### Variables
 - .ios
-- .windows
 - .android
 - Is set to either true or false for the platform it is on
 Example:
@@ -79,13 +79,11 @@ if (nsPlatform.ios) { /* do my ios specific stuff */ }
 
 ### Switch Statement support
 #### .platform
-- .type.WINDOWS
 - .type.IOS
 - .type.ANDROID
 Example:
 ```
 switch (nsPlatform.platform) {
-  case nsPlatform.type.WINDOWS: // Do Windows stuff
   case nsPlatform.type.IOS:     // Do iOS stuff
   case nsPlatform.type.ANDROID: // Do Android stuff
 }
@@ -106,6 +104,7 @@ switch (nsPlatform.platform) {
 - .model - Model number of device
 - .name - Name of device (might be the same as model)
 - .manufacturer - Manufacturer of the device
+- .notch - true or false, if device has a notch. 
 
 ```
 console.log(nsPlatform.manufacturer, nsPlatform.name);

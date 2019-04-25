@@ -1,11 +1,11 @@
 /**********************************************************************************
- * (c) 2016-2019 Master Technology
+ * (c) 2016-2019, Master Technology
  * Licensed under the MIT license or contact me for a Support or Commercial License
  *
  * I do contract work in most languages, so let me solve your problems!
  *
  * Any questions please feel free to email me or put a issue up on the github repo
- * Version 1.2.6                                      Nathan@master-technology.com
+ * Version 1.3.0                                      Nathan@master-technology.com
  *********************************************************************************/
 "use strict";
 
@@ -16,11 +16,9 @@ let getResolution, getDevice, getDeviceType;
 if (typeof global.nsPlatform === 'undefined') {
 	global.nsPlatform = {
 		ios: false,
-		windows: false,
 		android: false,
-		type: {ANDROID: 1, IOS: 2, WINDOWS: 3},
-		TYPE: {ANDROID: 1, IOS: 2, WINDOWS: 3},
-		isWindows: function() { return global.nsPlatform.windows; },
+		type: {ANDROID: 1, IOS: 2},
+		TYPE: {ANDROID: 1, IOS: 2},
 		isAndroid: function() { return global.nsPlatform.android; },
 		isIOS: function() { return global.nsPlatform.ios; },
         hasSoftNav: function() {
@@ -49,9 +47,6 @@ if (typeof global.nsPlatform === 'undefined') {
 	} else if (typeof NSString !== 'undefined' && typeof NSObject !== 'undefined') {
 		global.nsPlatform.ios = true;
 		global.nsPlatform.platform = global.nsPlatform.type.IOS;
-	} else { // TODO: Check what properties are available on Windows Runtime
-		global.nsPlatform.windows = true;
-		global.nsPlatform.platform = global.nsPlatform.type.WINDOWS;
 	}
 
 	// Lock the object down to prevent any changes
@@ -107,7 +102,8 @@ if (nsPlatform.android) {
 	let deviceInfoCache = null;
 	getDevice = function() {
 	    if (deviceInfoCache) { return deviceInfoCache; }
-	    deviceInfoCache = {emulator: false, model: "emulator", name: "emulator", manufacturer: "generic"};
+	    deviceInfoCache = {emulator: false, model: "emulator", name: "emulator", manufacturer: "generic", notch: false};
+        let context = getContext();
 
         const res = android.os.Build.FINGERPRINT;
         if (res.indexOf("vbox86") >= 0 || res.indexOf("generic") >= 0) { deviceInfoCache.emulator = true; }
@@ -115,9 +111,21 @@ if (nsPlatform.android) {
         deviceInfoCache.manufacturer = android.os.Build.MANUFACTURER;
         deviceInfoCache.model = android.os.Build.MODEL;
 
-        const betterModel = android.provider.Settings.Secure.getString(getContext().getContentResolver(), "bluetooth_name");
+        const betterModel = android.provider.Settings.Secure.getString(context.getContentResolver(), "bluetooth_name");
         if (betterModel) { deviceInfoCache.name = betterModel.toString();}
         else deviceInfoCache.name = deviceInfoCache.model;
+
+        // Notch detection
+        let statusBarHeight = 0;
+        let resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            statusBarHeight = context.getResources().getDimensionPixelSize(resourceId);
+            const metrics = new android.util.DisplayMetrics();
+            context.getSystemService(android.content.Context.WINDOW_SERVICE).getDefaultDisplay().getRealMetrics(metrics);
+            statusBarHeight = parseInt(statusBarHeight / metrics.density, 10);
+        }
+        if (statusBarHeight > 24) { deviceInfoCache.notch = true; }
+
 
         return deviceInfoCache;
     };
@@ -148,7 +156,7 @@ if (nsPlatform.android) {
 	let deviceInfoCache = null;
 	getDevice = function() {
 	    if (deviceInfoCache) { return deviceInfoCache; }
-	    deviceInfoCache = {emulator: false, model: "emulator", name: "emulator", manufacturer: "Apple"};
+	    deviceInfoCache = {emulator: false, model: "emulator", name: "emulator", manufacturer: "Apple", notch: false};
         // See: https://github.com/NativeScript/ios-runtime/issues/698
         const _SYS_NAMELEN = 256;
         const buffer = interop.alloc(5 * _SYS_NAMELEN);
@@ -228,16 +236,20 @@ if (nsPlatform.android) {
             case "iPhone10,3":
             case "iPhone10,6":
                 deviceInfoCache.name = "iPhoneX";
+                deviceInfoCache.notch = true;
                 break;
             case "iPhone11,2":
                 deviceInfoCache.name = "iPhoneXS";
+                deviceInfoCache.notch = true;
                 break;
             case "iPhone11,4":
             case "iPhone11,6":
                 deviceInfoCache.name = "iPhoneXSMax";
+                deviceInfoCache.notch = true;
                 break;
             case "iPhone11,8":
                 deviceInfoCache.name = "iPhoneXR";
+                deviceInfoCache.notch = true;
                 break;
             // endregion iPhone
 
@@ -331,7 +343,7 @@ if (nsPlatform.android) {
             case "iPad11,1":
             case "iPad11,2":
                 deviceInfoCache.name = "iPad Mini 5"; // 5th Gen
-
+                break;
 
             /// endregion iPad
 
