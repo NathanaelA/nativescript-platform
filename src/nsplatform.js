@@ -1,11 +1,11 @@
 /**********************************************************************************
- * (c) 2016-2017 Master Technology
+ * (c) 2016-2019 Master Technology
  * Licensed under the MIT license or contact me for a Support or Commercial License
  *
  * I do contract work in most languages, so let me solve your problems!
  *
  * Any questions please feel free to email me or put a issue up on the github repo
- * Version 1.2.0                                      Nathan@master-technology.com
+ * Version 1.2.5                                      Nathan@master-technology.com
  *********************************************************************************/
 "use strict";
 
@@ -229,15 +229,15 @@ if (nsPlatform.android) {
             case "iPhone10,6":
                 deviceInfoCache.name = "iPhoneX";
                 break;
-            case "iPhone11,8":
-                deviceInfoCache.name = "iPhoneXR";
-                break;
             case "iPhone11,2":
                 deviceInfoCache.name = "iPhoneXS";
                 break;
             case "iPhone11,4":
             case "iPhone11,6":
                 deviceInfoCache.name = "iPhoneXSMax";
+                break;
+            case "iPhone11,8":
+                deviceInfoCache.name = "iPhoneXR";
                 break;
             // endregion iPhone
 
@@ -301,7 +301,33 @@ if (nsPlatform.android) {
             case "iPad7,4": deviceInfoCache.name = "iPad 10.5 Pro"; break;
 
             case "iPad6,11":
-            case "iPad6,12": deviceInfoCache.name = "iPad 5"; break;
+            case "iPad6,12": deviceInfoCache.name = "iPad 5"; break;  // 5th gen
+
+            case "iPad7,5":
+            case "iPad7,6":
+                deviceInfoCache.name = "iPad 6"; // 6th Gen
+                break;
+
+            case "iPad8,1":
+            case "iPad8,2":
+            case "iPad8,3":
+            case "iPad8,4":
+                deviceInfoCache.name = "iPad 11.0 Pro";
+                break;
+
+
+            case "iPad8,5":
+            case "iPad8,6":
+            case "iPad8,7":
+            case "iPad8,8":
+                deviceInfoCache.name = "iPad 12.9 Pro 3"; // 3rd Gen
+                break;
+
+            case "iPad11,3":
+            case "iPad11,4":
+                deviceInfoCache.name = "iPad Air 3"; // 3rd Gen
+                break;
+
             /// endregion iPad
 
             /// region iPod's
