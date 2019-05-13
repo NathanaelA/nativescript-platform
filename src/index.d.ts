@@ -40,6 +40,8 @@ interface NsPlatform {
         model: string;
         name: string;
         manufacturer: string;
+        notch: boolean;
+        buttonLess: boolean;
     };
 }
 

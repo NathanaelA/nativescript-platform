@@ -5,7 +5,7 @@
  * I do contract work in most languages, so let me solve your problems!
  *
  * Any questions please feel free to email me or put a issue up on the github repo
- * Version 1.3.0                                      Nathan@master-technology.com
+ * Version 1.3.1                                      Nathan@master-technology.com
  *********************************************************************************/
 "use strict";
 
@@ -22,12 +22,10 @@ if (typeof global.nsPlatform === 'undefined') {
 		isAndroid: function() { return global.nsPlatform.android; },
 		isIOS: function() { return global.nsPlatform.ios; },
         hasSoftNav: function() {
-		   const fake = getResolution(false);
-		   const real = getResolution();
-		   return ((fake.widthPixels < real.widthPixels) || (fake.heightPixels < real.heightPixels));
+               const devInfo = getDevice();
+               return (devInfo.softNav);
         },
 		platform: 0,
-
 	};
     // Screen Sizes since platforms are not accurate after a rotation event
 	Object.defineProperty(global.nsPlatform, "screen", {
@@ -102,11 +100,15 @@ if (nsPlatform.android) {
 	let deviceInfoCache = null;
 	getDevice = function() {
 	    if (deviceInfoCache) { return deviceInfoCache; }
-	    deviceInfoCache = {emulator: false, model: "emulator", name: "emulator", manufacturer: "generic", notch: false};
+	    deviceInfoCache = {emulator: false, model: "emulator", name: "emulator", manufacturer: "generic", notch: false, softNav: false};
         let context = getContext();
 
         const res = android.os.Build.FINGERPRINT;
-        if (res.indexOf("vbox86") >= 0 || res.indexOf("generic") >= 0) { deviceInfoCache.emulator = true; }
+        if (res != null && (res.indexOf("vbox86") >= 0 || res.indexOf("generic") >= 0 || res.indexOf("sdk") >=0 )) { deviceInfoCache.emulator = true; }
+
+        const hwres = android.os.Build.HARDWARE;
+        if (hwres != null && (res.indexOf("goldfish") >= 0 || res.indexOf("ranchu") >= 0 || res.indexOf("vbox86") >= 0)) { deviceTypeCache.emulator = true; }
+
 
         deviceInfoCache.manufacturer = android.os.Build.MANUFACTURER;
         deviceInfoCache.model = android.os.Build.MODEL;
@@ -115,14 +117,19 @@ if (nsPlatform.android) {
         if (betterModel) { deviceInfoCache.name = betterModel.toString();}
         else deviceInfoCache.name = deviceInfoCache.model;
 
+        // Figure out if Android has SoftNav or buttons...
+        const fake = getResolution(false);
+        const real = getResolution(true);
+        deviceInfoCache.softNav = ((fake.widthPixels < real.widthPixels) || (fake.heightPixels < real.heightPixels));
+
         // Notch detection
         let statusBarHeight = 0;
         let resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
             statusBarHeight = context.getResources().getDimensionPixelSize(resourceId);
-            const metrics = new android.util.DisplayMetrics();
-            context.getSystemService(android.content.Context.WINDOW_SERVICE).getDefaultDisplay().getRealMetrics(metrics);
-            statusBarHeight = parseInt(statusBarHeight / metrics.density, 10);
+            //const metrics = new android.util.DisplayMetrics();
+            //context.getSystemService(android.content.Context.WINDOW_SERVICE).getDefaultDisplay().getRealMetrics(metrics);
+            statusBarHeight = parseInt( (statusBarHeight / real.scale), 10);
         }
         if (statusBarHeight > 24) { deviceInfoCache.notch = true; }
 
@@ -156,7 +163,7 @@ if (nsPlatform.android) {
 	let deviceInfoCache = null;
 	getDevice = function() {
 	    if (deviceInfoCache) { return deviceInfoCache; }
-	    deviceInfoCache = {emulator: false, model: "emulator", name: "emulator", manufacturer: "Apple", notch: false};
+	    deviceInfoCache = {emulator: false, model: "emulator", name: "emulator", manufacturer: "Apple", notch: false, softNav: false};
         // See: https://github.com/NativeScript/ios-runtime/issues/698
         const _SYS_NAMELEN = 256;
         const buffer = interop.alloc(5 * _SYS_NAMELEN);
@@ -236,20 +243,24 @@ if (nsPlatform.android) {
             case "iPhone10,3":
             case "iPhone10,6":
                 deviceInfoCache.name = "iPhoneX";
+                deviceInfoCache.softNav = true;
                 deviceInfoCache.notch = true;
                 break;
             case "iPhone11,2":
                 deviceInfoCache.name = "iPhoneXS";
+                deviceInfoCache.softNav = true;
                 deviceInfoCache.notch = true;
                 break;
             case "iPhone11,4":
             case "iPhone11,6":
                 deviceInfoCache.name = "iPhoneXSMax";
+                deviceInfoCache.softNav = true;
                 deviceInfoCache.notch = true;
                 break;
             case "iPhone11,8":
                 deviceInfoCache.name = "iPhoneXR";
                 deviceInfoCache.notch = true;
+                deviceInfoCache.softNav = true;
                 break;
             // endregion iPhone
 
@@ -325,6 +336,7 @@ if (nsPlatform.android) {
             case "iPad8,3":
             case "iPad8,4":
                 deviceInfoCache.name = "iPad 11.0 Pro";
+                deviceInfoCache.softNav = true;
                 break;
 
 
@@ -333,6 +345,7 @@ if (nsPlatform.android) {
             case "iPad8,7":
             case "iPad8,8":
                 deviceInfoCache.name = "iPad 12.9 Pro 3"; // 3rd Gen
+                deviceInfoCache.softNav = true;
                 break;
 
             case "iPad11,3":

@@ -65,7 +65,7 @@ Example:
 if (nsPlatform.isAndroid()) { /* do my android specific stuff */ }
 ```
 - .hasSoftNav();
-returns if Android device is using Soft Navigation.
+returns if device is using Soft Navigation.
 
 
 ### Variables
@@ -105,6 +105,7 @@ switch (nsPlatform.platform) {
 - .name - Name of device (might be the same as model)
 - .manufacturer - Manufacturer of the device
 - .notch - true or false, if device has a notch. 
+- .buttonLess - true or false, **APPLE** only -- if the device has no home button.  ( .hasSoftNav() supports both android and ios )
 
 ```
 console.log(nsPlatform.manufacturer, nsPlatform.name);
