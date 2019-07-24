@@ -107,7 +107,7 @@ if (nsPlatform.android) {
         if (res != null && (res.indexOf("vbox86") >= 0 || res.indexOf("generic") >= 0 || res.indexOf("sdk") >=0 )) { deviceInfoCache.emulator = true; }
 
         const hwres = android.os.Build.HARDWARE;
-        if (hwres != null && (res.indexOf("goldfish") >= 0 || res.indexOf("ranchu") >= 0 || res.indexOf("vbox86") >= 0)) { deviceTypeCache.emulator = true; }
+        if (hwres != null && (res.indexOf("goldfish") >= 0 || res.indexOf("ranchu") >= 0 || res.indexOf("vbox86") >= 0)) { deviceInfoCache.emulator = true; }
 
 
         deviceInfoCache.manufacturer = android.os.Build.MANUFACTURER;
